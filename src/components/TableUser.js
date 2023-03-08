@@ -176,9 +176,9 @@ const TableUser = (props) => {
                     
     return (
         <>
-        <div className="my-3 add-new">
+        <div className="my-3 add-new d-sm-flex">
              <span>List Users:</span> 
-             <div className="group-btns">
+             <div className="group-btns mt-sm-0 mt-2">
                <label htmlFor="test" className='btn btn-warning'>
                <i class="fa-solid fa-file-import"></i> Import
                 </label>
@@ -194,16 +194,16 @@ const TableUser = (props) => {
                data={dataExport}
                asyncOnClick={true}
                onClick={getUsersExport}
-               >Export</CSVLink> 
+               > <i className="fa-solid fa-file-arrow-down"></i> Export</CSVLink> 
 
                <button className='btn btn-success' 
                onClick={() => setIsShowModalAddNew(true)}
                >
-                <i className="fa-solid fa-circle-plus"></i> Add new user
+                <i className="fa-solid fa-circle-plus"></i>  Add new
                 </button>
               </div>
         </div>
-        <div className='col-4 my-3'>
+        <div className='col-12 col-sm-4 my-3'>
             <input 
             className='form-control' 
             placeholder='Search user by email'
@@ -211,7 +211,8 @@ const TableUser = (props) => {
             onChange={(event) => handleSearch(event)}
             />
         </div>
-    <Table striped bordered hover>
+        <div className='customize-table'>
+        <Table striped bordered hover >
       <thead>
         <tr>
           <th>
@@ -269,8 +270,11 @@ const TableUser = (props) => {
            })
         }
       </tbody>
-    </Table>
+        </Table>
+        </div>
+    
     <ReactPaginate
+    
         breakLabel="..."
         nextLabel="next >"
         onPageChange={handlePageClick}

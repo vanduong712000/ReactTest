@@ -1,48 +1,50 @@
 import { useEffect, useState } from "react";
-import { loginApi } from "../Services/UserServices";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { handleLoginRedux } from "../redux/actions/userAction";
+import { useDispatch, useSelector } from "react-redux";
+
 
 const Login = () => {
    const navigate = useNavigate();
+   const dispatch = useDispatch();
 
     const [email , setEmail ] = useState("");
     const [password , setPassword] = useState("");
     const [isShowPassword , setIsShowPassword] = useState(false);
 
-    const [loadingAPI , setLoadingAPI] = useState(false);
-
-    useEffect(()=>{
-        let token = localStorage.getItem("token")
-        if(token){
-          navigate("/");
-        }
-    },[])
-
+    const isLoading = useSelector(state => state.user.isLoading);
+    const account = useSelector(state => state.user.account);
 
  const handleLogin = async () => {
     if(!email || !password){
       toast.error("Email/Password is reuired!");
       return;
     }
-    setLoadingAPI(true);
-    let res = await loginApi(email, password);
-    if(res && res.token) {
-        localStorage.setItem("token" , res.token);
-        navigate("/");
-    }else {
-      //error
-      if(res && res.status === 400){
-        toast.error(res.data.error);
+    
+    dispatch(handleLoginRedux(email, password));
+    
+ }
+    const handleGoBack = () => {
+      navigate("/");
+    }
+
+    const handlePressEnter = (event) => {
+      if(event.key === 'Enter'){
+        handleLogin();
       }
     }
-    setLoadingAPI(false);
- }
-
+      useEffect(() => {
+         if(account && account.auth === true){
+          navigate("/");
+         }
+      },[account])
+    
     return (<>
     <div className="login-container col-12 col-sm-4">
         <div className="title">login</div>
-        <div className="text">Email or username</div>
+        <div className="text">Email or username </div>
+        
         <input 
         type="text" 
         placeholder="Email or username..."
@@ -55,6 +57,7 @@ const Login = () => {
         placeholder="Password..."
         value={password}
         onChange={(event)=> setPassword(event.target.value)}
+        onKeyDown={(event) => handlePressEnter(event)}
         />
         <i className={isShowPassword === true ? "fa-solid fa-eye" : "fa-solid fa-eye-slash"}
          onClick={()=> setIsShowPassword(!isShowPassword)}
@@ -66,11 +69,13 @@ const Login = () => {
         disabled={(email && password) ? false : true}
           onClick={()=> handleLogin()}
         > 
-          {loadingAPI && <i class="fas fa-sync fa-spin"></i>}
+          {isLoading && <i class="fas fa-sync fa-spin"></i>}
           &nbsp;login
         </button>
         <div className="back">
-        <i className="fa-solid fa-angles-left"></i> Go back</div>
+        <i className="fa-solid fa-angles-left"></i> 
+           <span onClick={()=> handleGoBack()}> &nbsp;Go back</span>
+        </div>
     </div>
       
     </>)
